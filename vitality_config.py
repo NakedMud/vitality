@@ -29,12 +29,14 @@ class VitalityConfig:
         self.hp_hitdie = 10
         self.sp_hitdie = 10
         self.ep_hitdie = 10
-        self.regen_heartbeat = 4
+        self.regen_heartbeat = 10
         self.hp_regen = 1
         self.sp_regen = 1
         self.ep_regen = 1
         self.corpse_object = "corpse@limbo"
         self.death_room = "limbo@limbo"
+        self.regen_display = False
+        self.regen_display_full = True
         
         # Status messages
         self.hp_status = {}
@@ -113,6 +115,10 @@ class VitalityConfig:
                 self.corpse_object = defaults.readString("corpse_object")
             if defaults.contains("death_room"):
                 self.death_room = defaults.readString("death_room")
+            if defaults.contains("regen_display"):
+                self.regen_display = defaults.readBool("regen_display")
+            if defaults.contains("regen_display_full"):
+                self.regen_display_full = defaults.readBool("regen_display_full")
         
         # Read status messages
         if set.contains("status"):
@@ -171,6 +177,8 @@ class VitalityConfig:
         defaults.storeInt("ep_regen", self.ep_regen)
         defaults.storeString("corpse_object", self.corpse_object)
         defaults.storeString("death_room", self.death_room)
+        defaults.storeBool("regen_display", self.regen_display)
+        defaults.storeBool("regen_display_full", self.regen_display_full)
         set.storeSet("defaults", defaults)
         
         # Store status messages

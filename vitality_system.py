@@ -205,18 +205,51 @@ def vitality_heartbeat_hook(info):
 def regenerate_character(ch):
     """Regenerate a character's vitality stats"""
     aux = ch.getAuxiliary("vitality_data")
+    config = get_vitality_config()
+    if not config:
+        return
+    
+    # Track if any regeneration occurred and if any stat reached 100%
+    regen_occurred = False
+    reached_full = []
     
     # Regenerate HP
     if aux.hp < aux.maxhp:
+        old_hp = aux.hp
         heal_character(ch, aux.hp_regen, "hp")
+        regen_occurred = True
+        if aux.hp >= aux.maxhp and old_hp < aux.maxhp:
+            reached_full.append("hp")
     
     # Regenerate SP
     if aux.sp < aux.maxsp:
+        old_sp = aux.sp
         heal_character(ch, aux.sp_regen, "sp")
+        regen_occurred = True
+        if aux.sp >= aux.maxsp and old_sp < aux.maxsp:
+            reached_full.append("sp")
     
     # Regenerate EP
     if aux.ep < aux.maxep:
+        old_ep = aux.ep
         heal_character(ch, aux.ep_regen, "ep")
+        regen_occurred = True
+        if aux.ep >= aux.maxep and old_ep < aux.maxep:
+            reached_full.append("ep")
+    
+    # Show status if any regeneration occurred and regen_display is enabled
+    if regen_occurred and config.regen_display:
+        ch.send("[Health: %d/%d  Spell: %d/%d  Energy: %d/%d]" % (aux.hp, aux.maxhp, aux.sp, aux.maxsp, aux.ep, aux.maxep))
+    
+    # Show 100% messages if regen_display_full is enabled
+    if reached_full and config.regen_display_full:
+        for stat in reached_full:
+            if stat == "hp":
+                ch.send(config.get_status_message("hp", aux.hp, aux.maxhp))
+            elif stat == "sp":
+                ch.send(config.get_status_message("sp", aux.sp, aux.maxsp))
+            elif stat == "ep":
+                ch.send(config.get_status_message("ep", aux.ep, aux.maxep))
 
 ################################################################################
 # Character Generation Hook
